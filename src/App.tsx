@@ -27,47 +27,47 @@ export const App: FC = () => {
     ]).then(([images, users, accounts]: [Image[], User[], Account[]]) => {
       const dataConverter = (users: User[], accounts: Account[], images: Image[]): Row[] => {
 
-        const rows: Row[] = [];
-
-        const fs = images.map((image) => {
+        const avatars = images.map((image) => {
           return {
+            Id: image.userID,
             avatar: image.url,
           }
         })
 
-        const fs1 = users.map((user) => {
+        const usersInfo = users.map((user) => {
             return {
+              Id: user.userID,
               username: user.username,
               country: user.country,
               name: user.name,
             }
         })
       
-        const fs2 = accounts.map((account) => {
+        const accountsInfo = accounts.map((account) => {
+          const initialValue = 0;
           return {
-            lastPayments: account.payments.length, 
+            Id: account.userID,
+            lastPayments: account.payments.reduce((acc, val) => acc + val.totalSum, initialValue), 
             posts: account.posts,
           }
         })
-
-        fs.map((item, i) => {
-            return rows.push({...item, ...fs1[i], ...fs2[i] });
-        })
-        return rows;
+        
+        return usersInfo.map(ui => ({...ui, ...accountsInfo.find(ai => ai.Id === ui.Id), ...avatars.find(avs => avs.Id === ui.Id)}));
       };
       setData(dataConverter(users, accounts, images));
     });
   }, []);
 
   const filterData = (data: Row[]) => {
-    if (data) {
-      const modifiedData = data
-      .filter(item => (search.length > 0 && item.country.toLowerCase().includes(search.toLowerCase())) || filters.some(f => f(item)));
-      [].concat(data.sort((a, b) => (a.username > b.username ? -1*(sort) : 1*(sort) )));
+    if (!data) { 
+      return;
+    }
+    const modifiedData = data
+    .filter(item => (search.length > 0 && item.country.toLowerCase().includes(search.toLowerCase())) || filters.some(f => f(item)));
+    [].concat(data.sort((a, b) => (a.username > b.username ? -1*(sort) : 1*(sort) )));
 
-      if (modifiedData.length > 0) {
-        return modifiedData;
-      }
+    if (modifiedData.length > 0) {
+      return modifiedData;
     }
   }
 
