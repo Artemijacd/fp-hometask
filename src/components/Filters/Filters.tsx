@@ -30,9 +30,9 @@ export const Filters: FC<FiltersProps> = props => {
   const [selectedFilter, setSelectedFilter] = useState<string[]>([]);
 
   const onChange = ({ title }) => {
-    console.log(title); // for debugging
 
     let updatedFilters;
+    const { updateStore } = props;
 
     if (selectedFilter.find(filter => filter === title)) {
       updatedFilters = selectedFilter.filter(filter => filter !== title);
@@ -40,7 +40,14 @@ export const Filters: FC<FiltersProps> = props => {
       updatedFilters = [...selectedFilter, title];
     }
 
+    const filters = {
+      'Without posts': item => item.posts == 0,
+      'More than 100 posts': item => item.posts >= 100,
+    }
+    const selected = updatedFilters.map(filter => {return filters[filter]});
     setSelectedFilter(updatedFilters);
+    updateStore(selected);
+    
   };
 
   return (

@@ -21,10 +21,10 @@ interface SearchProps {
 
 export const Search: FC<SearchProps> = props => {
   const [searchedValue, setSearchedValue] = useState('');
-
+  const { updateStore } = props;
   const onChange = value => {
-    console.log(value); // for debugging
     setSearchedValue(value);
+    updateStore(value);
   };
 
   return (

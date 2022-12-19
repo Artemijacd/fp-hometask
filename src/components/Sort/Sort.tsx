@@ -22,8 +22,11 @@ interface SortProps {
 // OR store can be global
 
 export const Sort: FC<SortProps> = props => {
+
   const handleChange = value => {
-    console.log(value); // for debugging
+    const { updateStore } = props;
+    let order: number = value == 'asc' ? -1 : 1; 
+    updateStore(order);
   };
 
   return (
